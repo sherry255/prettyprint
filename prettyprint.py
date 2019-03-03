@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 from functools import partial
 
+__all__ = ('pprint', 'get_pprint_func')
+__author__ = 'sherry'
 
-def pprint_dict(o, depth, end):
+
+def _pprint_dict(o, depth, end):
     print("{")
     for k, v in sorted(o.items()):
         pprint(k, depth + 1, end=": ")
@@ -10,49 +13,49 @@ def pprint_dict(o, depth, end):
     print("  " * depth + "}", end=end)
 
 
-def pprint_sequence(o, depth, end, delim):
+def _pprint_sequence(o, depth, end, delim):
     print(delim[0])
     for v in o:
         pprint(v, depth + 1, end=",\n")
     print("  " * depth + delim[1], end=end)
 
 
-def pprint_list(o, depth, end):
-    pprint_sequence(o, depth, end, "[]")
+def _pprint_list(o, depth, end):
+    _pprint_sequence(o, depth, end, "[]")
 
 
-def pprint_tuple(o, depth, end):
-    pprint_sequence(o, depth, end, "()")
+def _pprint_tuple(o, depth, end):
+    _pprint_sequence(o, depth, end, "()")
 
 
-def pprint_set(o, depth, end):
-    pprint_sequence(o, depth, end, "{}")
+def _pprint_set(o, depth, end):
+    _pprint_sequence(o, depth, end, "{}")
 
 
-def pprint_repr(o, depth, end):
+def _pprint_repr(o, depth, end):
     print(repr(o), end=end)
 
 
-def pprint_instance(o, depth, end):
+def _pprint_instance(o, depth, end):
     mod = "" if o.__class__.__module__ == "__main__" else (o.__class__.__module__ + ".")
     print(mod + o.__class__.__name__, end=" ")
     pprint(o.__dict__, depth, indent=False, end=end)
 
 
 PPRINT_FUNCS = {
-    list: pprint_list,
-    tuple: pprint_tuple,
-    dict: pprint_dict,
-    set: pprint_set,
-    frozenset: pprint_set,
+    list: _pprint_list,
+    tuple: _pprint_tuple,
+    dict: _pprint_dict,
+    set: _pprint_set,
+    frozenset: _pprint_set,
 }
 
 
 def get_pprint_func(o):
     if type(o).__flags__ & (1 << 9):  # Py_TPFLAGS_HEAPTYPE
-        return getattr(o, "__pprint__", partial(pprint_instance, o))
+        return getattr(o, "__pprint__", partial(_pprint_instance, o))
     else:
-        return partial(PPRINT_FUNCS.get(type(o), pprint_repr), o)
+        return partial(PPRINT_FUNCS.get(type(o), _pprint_repr), o)
 
 
 def pprint(o, depth=0, *, indent=True, end="\n"):
