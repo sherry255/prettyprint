@@ -8,8 +8,8 @@ pip install git+git://github.com/sherry255/prettyprint.git
 ```
 
 # Usage
-```from prettyprint import pprint```
-```
+```pycon
+    >>> from prettyprint import pprint
     >>> pprint(True)
     True
     >>> pprint("aaaaa")
