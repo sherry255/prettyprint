@@ -29,6 +29,6 @@ setup(
     author='sherry',
     author_email='xcmkya@gmail.com',
 
-    packages=['prettyprint'],
+    py_modules=['prettyprint'],
     zip_safe=False,
 )
